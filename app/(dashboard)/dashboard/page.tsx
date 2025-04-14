@@ -1,25 +1,41 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import { useState } from "react";
 
-export default function Dashboard() {
+import { Button } from "@/components/ui/button";
+import GlobalImageSelector from "@/components/dashboard/GlobalImageSelector";
+
+export default function ImagePickerPage() {
+  const [selectedImage, setSelectedImage] = useState("");
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-      <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-      </div>
-      <div
-        className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-        x-chunk="dashboard-02-chunk-1"
-      >
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h3 className="text-2xl font-bold tracking-tight">
-            You have no products
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            You can start selling as soon as you add a product.
-          </p>
-          <Button className="mt-4">Add Product</Button>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Image Picker Example</h1>
+
+      {selectedImage ? (
+        <div className="mb-4 border p-4 rounded">
+          <h2 className="font-medium mb-2">Selected Image:</h2>
+          <div className="w-40 h-40 relative">
+            <img
+              src={selectedImage}
+              alt="Selected"
+              className="object-cover rounded"
+            />
+          </div>
         </div>
-      </div>
-    </main>
+      ) : (
+        <p className="text-gray-500 mb-4">No image selected</p>
+      )}
+
+      <Button onClick={() => setIsSelectorOpen(true)}>Select Image</Button>
+
+      <GlobalImageSelector
+        open={isSelectorOpen}
+        onClose={() => setIsSelectorOpen(false)}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        mode="single"
+      />
+    </div>
   );
 }
