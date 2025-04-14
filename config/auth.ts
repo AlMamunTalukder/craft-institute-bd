@@ -49,7 +49,6 @@ export const authOptions: NextAuthOptions = {
           const existingUser = await db.user.findUnique({
             where: { email: credentials.email },
           });
-
           if (!existingUser) {
             console.log("No user found");
             throw { error: "No user found", status: 401 };

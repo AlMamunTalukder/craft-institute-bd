@@ -88,7 +88,7 @@ const UploadButton = () => {
           <span>Upload New File</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Upload New Image</DialogTitle>
           <DialogDescription>

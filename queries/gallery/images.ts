@@ -9,14 +9,26 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const getAllImages = async () => {
-  const images = await db.image.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+export const getAllImages = async (page = 1, limit = 20) => {
+  const skip = (page - 1) * limit;
 
-  return images;
+  const [images, total] = await Promise.all([
+    db.image.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    db.image.count(),
+  ]);
+
+  return {
+    images,
+    total,
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const deleteImage = async (imageId: string) => {

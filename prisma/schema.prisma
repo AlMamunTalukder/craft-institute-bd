@@ -65,21 +65,6 @@ model User {
   @@map("users")
 }
 
-model Category {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  slug        String  @unique
-  image       String?
-  description String?
-  url         String?
-  featured    Boolean @default(false)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-
-  @@map("categories")
-}
-
 model Folder {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   name  String
@@ -105,4 +90,54 @@ model Image {
   updatedAt DateTime? @updatedAt
 
   @@map("images")
+}
+
+model SiteContent {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  logoLight String
+  logoDark  String
+  tagline   String
+
+  email   String
+  phone1  String
+  phone2  String?
+  address String
+
+  facebook      String
+  facebookGroup String
+  whatsapp      String
+  youtube       String
+  telegram      String
+
+  @@map("site_contents")
+}
+
+model Seminar {
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+  title                String
+  description          String?
+  date                 DateTime
+  registrationDeadline DateTime?
+  isOnline             Boolean       @default(true)
+  link                 String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  participants         Participant[]
+
+  @@map("seminars")
+}
+
+model Participant {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String   @unique
+  phone        String?
+  whatsapp     String?
+  occupation   String?
+  address      String?
+  registeredAt DateTime @default(now())
+  seminarId    String   @db.ObjectId
+  seminar      Seminar  @relation(fields: [seminarId], references: [id])
+
+  @@map("participants")
 }

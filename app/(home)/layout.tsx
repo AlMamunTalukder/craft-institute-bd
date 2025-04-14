@@ -1,23 +1,23 @@
-import PromoBanner from "@/components/frontend/PromoBanner";
-import { SiteBanner } from "@/components/frontend/site-banner";
-import Footer from "@/components/frontend/site-footer";
-import SiteHeader from "@/components/frontend/site-header";
-import NavbarV1 from "@/components/pages/NavbarV1";
-// import { NavbarV1 } from "@/components/pages/NavbarV1";
-import { authOptions } from "@/config/auth";
-import { getServerSession } from "next-auth";
-import React, { ReactNode } from "react";
+import Footer from "@/components/shared/Footer";
+import Header from "@/components/shared/Header";
+import SubHeader from "@/components/shared/SubHeader";
+import { db } from "@/prisma/db";
+import { ReactNode } from "react";
 
 export default async function HomeLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const siteData = await db.siteContent.findFirst({});
+  if (!siteData) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="bg-white">
-      {/* <PromoBanner /> */}
-      <SiteHeader session={session} />
+      <SubHeader siteData={siteData} />
+      <Header />
       {children}
       <Footer />
     </div>

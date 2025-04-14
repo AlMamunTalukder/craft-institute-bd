@@ -25,7 +25,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <Sidebar session={session} userRole={session.user.role} shops={shops} />
+      <Sidebar userRole={session.user.role} />
       <div className="flex flex-col">
         <Navbar session={session} />
         <div className="p-4 md:p-6 lg:p-8 ">

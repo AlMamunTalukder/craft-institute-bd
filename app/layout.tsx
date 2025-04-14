@@ -6,27 +6,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { Barlow, Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Loading from "./loading";
-
-const InterFont = Inter({
+import { Hind_Siliguri } from "next/font/google";
+const siliguri = Hind_Siliguri({
+  weight: "400",
   subsets: ["latin"],
 });
 
-const BarlowFont = Barlow({
-  subsets: ["latin-ext"],
-  weight: ["500", "700"],
-  style: "normal",
-  variable: "--font-barlow",
-  preload: true,
-});
-
 export const metadata: Metadata = {
-  title: "GoShop",
-  description: "A multi-vendor shop built with Next.js",
+  title: "Craft Institute",
+  description: "Craft Institute is a platform for learning and development",
 };
 
 const PostHogPageView = dynamic(() => import("@/components/PostHogPageView"));
@@ -37,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${InterFont.className} ${BarlowFont.variable}`}>
+      <body className={`${siliguri.className} bg-white`}>
         <Hydrate>
           <Suspense fallback={<Loading />}>
             <PHProvider>

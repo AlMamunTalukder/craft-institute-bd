@@ -7,9 +7,11 @@ import { notFound, usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 import { sidebarLinks as roleBasedLinks } from "./links";
 import SidebarLink, { SidebarLinkItem } from "./SidebarLink";
+import Image from "next/image";
+import { UserRole } from "@prisma/client";
 
 type SidebarProps = {
-  userRole?: "admin" | "super_admin" | "teacher";
+  userRole?: UserRole;
 };
 
 export function isAuthorizedPath(
@@ -65,14 +67,13 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     <div className="hidden border-r border-gray-700 bg-gray-950 md:block text-gray-200">
       <div className="flex h-full sticky top-0  max-h-screen flex-col">
         <div className="flex h-16 items-center border-b border-gray-700 px-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-semibold text-gray-100"
-          >
-            <Package2 className="h-6 w-6 text-gray-100" />
-            <span className="text-xl">
-              Go<span className="font-bold">Shop</span>
-            </span>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <Image
+              src="/footer-logo.png"
+              alt="Craft Institute Logo"
+              width={100}
+              height={100}
+            />
           </Link>
         </div>
         <div
@@ -92,11 +93,12 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
         </div>
         <div className="border-t border-gray-700 p-4">
           <Link
-            href="https://kalamstutorial.com"
+            href="/"
             target="_blank"
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm  transition-all duration-200",
-              "hover:bg-gray-800 hover:text-primary",
+              "hover:bg-gray-800",
+              "text-gray-200 hover:text-gray-100",
             )}
           >
             <ExternalLink className="h-4 w-4" />

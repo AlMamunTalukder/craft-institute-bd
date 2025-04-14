@@ -48,6 +48,12 @@ export const getAllFolders = async () => {
       name: true,
       slug: true,
       createdAt: true,
+      updatedAt: true,
+      _count: {
+        select: {
+          images: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -122,4 +128,42 @@ export const deleteFolder = async (id: string) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getFolderBySlug = async (
+  slug: string,
+  page: number = 1,
+  limit: number = 20,
+) => {
+  const folder = await db.folder.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!folder) return null;
+
+  const totalImages = await db.image.count({
+    where: { folderId: folder.id },
+  });
+
+  const images = await db.image.findMany({
+    where: { folderId: folder.id },
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  return {
+    ...folder,
+    images,
+    totalImages,
+    totalPages: Math.ceil(totalImages / limit),
+    currentPage: page,
+  };
 };

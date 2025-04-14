@@ -91,32 +91,34 @@ const AppSelectFile = ({
                 <h4 className="text-md font-semibold text-gray-700 mb-2">
                   Uploaded Files:
                 </h4>
-                {value.map((file: File, index: number) => (
-                  <Card key={index} className="overflow-hidden">
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <File className="w-8 h-8 text-blue-500" />
-                        <div>
-                          <p className="font-medium text-gray-700 truncate max-w-[200px]">
-                            {file.name || "Uploaded file"}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {(file.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
+                <div>
+                  {value.map((file: File, index: number) => (
+                    <Card key={index} className="overflow-hidden">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <File className="w-8 h-8 text-blue-500" />
+                          <div>
+                            <p className="font-medium text-gray-700 truncate max-w-[200px]">
+                              {file.name || "Uploaded file"}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemoveFile(file)}
-                        className="flex items-center space-x-1"
-                      >
-                        <Trash className="w-4 h-4" />
-                        <span>Remove</span>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleRemoveFile(file)}
+                          className="flex items-center space-x-1"
+                        >
+                          <Trash className="w-4 h-4" />
+                          <span>Remove</span>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
 

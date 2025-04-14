@@ -86,11 +86,7 @@ const FolderModal = ({
                   name: editFolder ? editFolder.name : "",
                 }}
               >
-                <TextInput
-                  name="name"
-                  label="Folder Name"
-                  value={editFolder ? editFolder.name : ""}
-                />
+                <TextInput name="name" label="Folder Name" />
                 <DialogFooter>
                   <SubmitButton
                     title={editFolder ? "Update Folder" : "Create Folder"}

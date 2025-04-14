@@ -1,138 +1,93 @@
 "use client";
-import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
-import React, { useState } from "react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-
 import { LoginProps } from "@/types/types";
-import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Lock, Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
-import { Button } from "../ui/button";
-import { FaGithub, FaGoogle } from "react-icons/fa";
-import TextInput from "../FormInputs/TextInput";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { z } from "zod";
 import PasswordInput from "../FormInputs/PasswordInput";
 import SubmitButton from "../FormInputs/SubmitButton";
+import TextInput from "../FormInputs/TextInput";
 import Logo from "../global/Logo";
-import CustomCarousel from "../frontend/custom-carousel";
 import AppForm from "./AppForm";
+
+const loginFormSchema = z.object({
+  email: z
+    .string({
+      required_error: "Please enter your email address",
+    })
+    .email("Invalid email address")
+    .min(1, "Email is required"),
+  password: z
+    .string({
+      required_error: "Please enter your password",
+    })
+    .min(8, "Password must be at least 8 characters long"),
+});
+
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-    reset,
-  } = useForm<LoginProps>();
+  const [passErr, setPassErr] = useState("");
+
   const params = useSearchParams();
   const returnUrl = params.get("returnUrl") || "/dashboard";
-  const [passErr, setPassErr] = useState("");
   const router = useRouter();
+
   async function onSubmit(data: LoginProps) {
     try {
       setLoading(true);
       setPassErr("");
-      console.log("Attempting to sign in with credentials:", data);
       const loginData = await signIn("credentials", {
         ...data,
         redirect: false,
       });
-      console.log("SignIn response:", loginData);
+
       if (loginData?.error) {
         setLoading(false);
         toast.error("Sign-in error: Check your credentials");
         setPassErr("Wrong Credentials, Check again");
-        // setShowNotification(true);
       } else {
-        // Sign-in was successful
-        // setShowNotification(false);
-        reset();
         setLoading(false);
         toast.success("Login Successful");
-        setPassErr("");
         router.push(returnUrl);
       }
     } catch (error) {
       setLoading(false);
       console.error("Network Error:", error);
-      // toast.error("Its seems something is wrong with your Network");
     }
   }
-  return (
-    <div className="w-full lg:grid h-screen lg:min-h-[600px] lg:grid-cols-2 relative ">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6 mt-10 md:mt-0">
-          <div className="absolute left-1/3 top-14 md:top-5 md:left-5">
-            <Logo />
-          </div>
-          <div className="grid gap-2 text-center mt-10 md:mt-0">
-            <h1 className="text-3xl font-bold">Login to your Account</h1>
-          </div>
-          <div className="">
-            <AppForm onSubmit={handleSubmit(onSubmit)}>
-              <TextInput
-                label="Email Address"
-                name="email"
-                icon={Mail}
-                placeholder="email"
-              />
-              <PasswordInput
-                label="Password"
-                name="password"
-                icon={Lock}
-                placeholder="password"
-                forgotPasswordLink="/forgot-password"
-              />
-              {passErr && <p className="text-red-500 text-xs">{passErr}</p>}
-              <div>
-                <SubmitButton
-                  title="Sign In"
-                  loadingTitle="Loading Please wait.."
-                  loading={loading}
-                  className="w-full"
-                  loaderIcon={Loader2}
-                  showIcon={false}
-                />
-              </div>
-            </AppForm>
-            <div className="flex items-center py-4 justify-center space-x-1 text-slate-900">
-              <div className="h-[1px] w-full bg-slate-200"></div>
-              <div className="uppercase">Or</div>
-              <div className="h-[1px] w-full bg-slate-200"></div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Button
-                onClick={() => signIn("google")}
-                variant={"outline"}
-                className="w-full"
-              >
-                <FaGoogle className="mr-2 w-6 h-6 text-red-500" />
-                Login with Google
-              </Button>
-              <Button
-                onClick={() => signIn("github")}
-                variant={"outline"}
-                className="w-full"
-              >
-                <FaGithub className="mr-2 w-6 h-6 text-slate-900 dark:text-white" />
-                Login with Github
-              </Button>
-            </div>
-            <p className="mt-6 text-center text-sm text-gray-500">
-              Not a Registered ?{" "}
-              <Link
-                href="/register"
-                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="w-full max-w-md space-y-8 p-8 bg-white border rounded-xl">
+        <div className="flex flex-col items-center">
+          <Logo />
         </div>
-      </div>
-      <div className="hidden bg-muted lg:block relative">
-        <CustomCarousel />
+        <AppForm resolver={zodResolver(loginFormSchema)} onSubmit={onSubmit}>
+          <TextInput
+            label="Email Address"
+            name="email"
+            icon={Mail}
+            placeholder="admin@example.com"
+          />
+          <PasswordInput
+            label="Password"
+            name="password"
+            icon={Lock}
+            placeholder="••••••••"
+          />
+          {passErr && <p className="text-red-500 text-xs mt-2">{passErr}</p>}
+          <SubmitButton
+            title="Login"
+            loadingTitle="Logging in..."
+            loading={loading}
+            className="w-full mt-4"
+            loaderIcon={Loader2}
+            showIcon={false}
+          />
+        </AppForm>
       </div>
     </div>
   );
