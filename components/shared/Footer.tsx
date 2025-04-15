@@ -6,42 +6,60 @@ import {
   FaWhatsapp,
   FaYoutube,
   FaTelegramPlane,
-  FaMapMarkerAlt,
 } from "react-icons/fa";
 import Image from "next/image";
 import Container from "./Container";
 import Link from "next/link";
+import { SiteContent } from "@prisma/client";
 
-const Footer = () => {
+type Props = {
+  siteContent: SiteContent;
+};
+
+const Footer = ({ siteContent }: Props) => {
+  const {
+    logoDark,
+    tagline,
+    email,
+    phone1,
+    phone2,
+    address,
+    facebook,
+    facebookGroup,
+    whatsapp,
+    youtube,
+    telegram,
+  } = siteContent;
+
   const socialLinks = [
     {
       icon: <FaFacebookF />,
       label: "Facebook",
-      href: "#",
+      href: facebook,
       color: "#1877F2",
     },
     {
       icon: <FaUserFriends />,
       label: "Groups",
-      href: "#",
+      href: facebookGroup,
       color: "#4267B2",
     },
     {
       icon: <FaWhatsapp />,
       label: "WhatsApp",
-      href: "#",
+      href: whatsapp,
       color: "#25D366",
     },
     {
       icon: <FaYoutube />,
       label: "YouTube",
-      href: "#",
+      href: youtube,
       color: "#FF0000",
     },
     {
       icon: <FaTelegramPlane />,
       label: "Telegram",
-      href: "#",
+      href: telegram,
       color: "#0088cc",
     },
   ];
@@ -56,7 +74,6 @@ const Footer = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black to-black/70 z-0" />
 
       <div className="relative z-10">
@@ -66,14 +83,14 @@ const Footer = () => {
             <div className="flex flex-col items-center md:items-start">
               <Link href="/">
                 <Image
-                  src="/footer-logo.png"
+                  src={logoDark}
                   alt="Craft Institute Logo"
                   width={180}
                   height={100}
                 />
               </Link>
               <p className="text-sm text-gray-300 mt-3 text-center md:text-left">
-                কথার জাদুতে মুগ্ধ করুন ক্রাফট ইনস্টিটিউটের সাথে।
+                {tagline}
               </p>
             </div>
 
@@ -84,25 +101,27 @@ const Footer = () => {
               </h3>
               <div className="space-y-3 text-sm">
                 <a
-                  href="tel:01310726000"
+                  href={`tel:${phone1}`}
                   className="flex items-center gap-3 hover:text-[#DC25FF] transition-colors duration-300"
                 >
                   <FaPhone className="text-gray-300" />
-                  01310726000
+                  {phone1}
                 </a>
+                {phone2 && (
+                  <a
+                    href={`tel:${phone2}`}
+                    className="flex items-center gap-3 hover:text-[#DC25FF] transition-colors duration-300"
+                  >
+                    <FaPhone className="text-gray-300" />
+                    {phone2}
+                  </a>
+                )}
                 <a
-                  href="tel:01700999093"
-                  className="flex items-center gap-3 hover:text-[#DC25FF] transition-colors duration-300"
-                >
-                  <FaPhone className="text-gray-300" />
-                  01700999093
-                </a>
-                <a
-                  href="mailto:craftinstitutebd@gmail.com"
+                  href={`mailto:${email}`}
                   className="flex items-center gap-3 hover:text-[#DC25FF] transition-colors duration-300"
                 >
                   <FaEnvelope className="text-gray-300" />
-                  craftinstitutebd@gmail.com
+                  {email}
                 </a>
               </div>
             </div>
@@ -113,18 +132,23 @@ const Footer = () => {
                 সোশ্যাল মিডিয়া
               </h3>
               <div className="flex flex-wrap gap-4 mt-2">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    aria-label={social.label}
-                    title={social.label}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-md"
-                    style={{ color: social.color }}
-                  >
-                    <span className="text-xl">{social.icon}</span>
-                  </a>
-                ))}
+                {socialLinks.map(
+                  (social, index) =>
+                    social.href && (
+                      <a
+                        key={index}
+                        href={social.href}
+                        aria-label={social.label}
+                        title={social.label}
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-md"
+                        style={{ color: social.color }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="text-xl">{social.icon}</span>
+                      </a>
+                    ),
+                )}
               </div>
             </div>
 
@@ -134,10 +158,8 @@ const Footer = () => {
                 ঠিকানা
               </h3>
               <div className="text-sm leading-relaxed flex items-start gap-3">
-                {/* <FaMapMarkerAlt className="text-gray-300 mt-1" /> */}
                 <p className="text-gray-200 text-center md:text-left">
-                  আদর্শ নগর আধারমানিক সঞ্চল নূরবাগ আবাসিক এলাকা, ২ নম্বর রোড
-                  চিটাগাং রোড, সিদ্ধিরগঞ্জ, নারায়ণগঞ্জ।
+                  {address}
                 </p>
               </div>
             </div>

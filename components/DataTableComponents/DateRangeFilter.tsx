@@ -33,8 +33,13 @@ export default function DateRangeFilter({
   className?: string;
 }) {
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 0, 20),
-    to: addDays(new Date(2024, 0, 20), 20),
+    from: new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate() - 7,
+      0,
+    ), // previous date
+    to: addDays(new Date(), 0), // today
   });
   // console.log(date);
   const handleChange = (selectedDate: any) => {
@@ -55,7 +60,7 @@ export default function DateRangeFilter({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />

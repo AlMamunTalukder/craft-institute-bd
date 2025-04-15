@@ -16,10 +16,18 @@ export default async function HomeLayout({
 
   return (
     <div className="bg-white">
-      <SubHeader siteData={siteData} />
-      <Header />
+      <SubHeader
+        siteData={{
+          facebook: siteData.facebook,
+          facebookGroup: siteData.facebookGroup,
+          telegram: siteData.telegram,
+          whatsapp: siteData.whatsapp,
+          youtube: siteData.youtube,
+        }}
+      />
+      <Header logo={siteData.logoLight || ""} />
       {children}
-      <Footer />
+      <Footer siteContent={siteData} />
     </div>
   );
 }

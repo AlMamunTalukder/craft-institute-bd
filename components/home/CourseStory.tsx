@@ -2,15 +2,14 @@ import Container from "../shared/Container";
 
 import Image from "next/image";
 import React from "react";
+import SectionTitle from "../shared/SectionTitle";
 
 const CourseStory = () => {
   return (
     <div className="mt-20">
       <Container>
         <div className="border-dashed border-b pb-20">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-center text-[#4F0187] mb-5">
-            কোর্স স্টোরি
-          </h2>
+          <SectionTitle text="কোর্স স্টোরি" />
           <Image
             src="/cup.png"
             height={500}

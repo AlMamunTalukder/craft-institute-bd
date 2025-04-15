@@ -14,7 +14,7 @@ import dynamic from "next/dynamic";
 import { SiteContent } from "@prisma/client";
 
 type Props = {
-  siteData: SiteContent;
+  siteData: Partial<SiteContent>;
 };
 
 const CountdownTimer = dynamic(
@@ -35,11 +35,36 @@ export default function SubHeader({ siteData }: Props) {
   }, []);
 
   const socialLinks = [
-    { icon: <FaFacebookF />, label: "Facebook", href: "#" },
-    { icon: <FaWhatsapp />, label: "WhatsApp", href: "#" },
-    { icon: <FaYoutube />, label: "YouTube", href: "#" },
-    { icon: <FaTelegramPlane />, label: "Telegram", href: "#" },
-    { icon: <FaUsers />, label: "Community", href: "#" },
+    {
+      icon: <FaFacebookF />,
+      label: "Facebook",
+      href: siteData.facebook || "#",
+      color: "#1877F2",
+    },
+    {
+      icon: <FaWhatsapp />,
+      label: "WhatsApp",
+      href: siteData.whatsapp || "#",
+      color: "#25D366",
+    },
+    {
+      icon: <FaYoutube />,
+      label: "YouTube",
+      href: siteData.youtube || "#",
+      color: "#FF0000",
+    },
+    {
+      icon: <FaTelegramPlane />,
+      label: "Telegram",
+      href: siteData.telegram || "#",
+      color: "#0088cc",
+    },
+    {
+      icon: <FaUsers />,
+      label: "Community",
+      href: siteData.facebookGroup || "#",
+      color: "#4267B2",
+    },
   ];
 
   return (
@@ -52,8 +77,17 @@ export default function SubHeader({ siteData }: Props) {
               <a
                 key={index}
                 href={social.href}
-                className="text-xs md:text-sm hover:text-[#DC25FF] transition-all duration-300 flex items-center justify-center h-6 w-6 md:h-7 md:w-7 rounded-full bg-white/10 hover:bg-white/20"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm transition-all duration-300 flex items-center justify-center h-6 w-6 md:h-7 md:w-7 rounded-full bg-white/10 hover:bg-white/20 shadow-md"
                 aria-label={social.label}
+                style={{
+                  color: "white",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = social.color)
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
               >
                 {social.icon}
               </a>

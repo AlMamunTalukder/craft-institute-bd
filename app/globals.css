@@ -204,3 +204,16 @@ body {
 .animate-fade-down {
   animation: fade-down 0.3s ease-out forwards;
 }
+
+.custom-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 6px;
+  background: none;
+  border-radius: 50%;
+  border-bottom: 3px solid #20c997;
+  transform: scaleX(0.8);
+}

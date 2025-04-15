@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { handleError } from "@/lib/utils";
+import { cn, handleError } from "@/lib/utils";
 import { deleteFolder, getAllFolders } from "@/queries/gallery/folder";
 import { Folder as IFolder } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -28,7 +28,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import FolderModal from "./FolderModal";
 
-function ListFolderButton() {
+type Props = {
+  className?: string;
+};
+
+function ListFolderButton({ className }: Props = { className: "" }) {
   const queryClient = useQueryClient();
   const [editFolder, setEditFolder] = useState<IFolder | null>(null);
   const [openFolderButton, setOpenFolderButton] = useState(false);
@@ -113,8 +117,8 @@ function ListFolderButton() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline">
-            <Folder size={24} className="mr-2" />
+          <Button className={cn(className)} variant="outline">
+            <Folder />
             <span>List Folders</span>
           </Button>
         </DialogTrigger>

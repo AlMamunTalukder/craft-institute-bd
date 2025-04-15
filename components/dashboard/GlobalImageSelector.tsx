@@ -1,28 +1,40 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { deleteImage, getAllImages } from "@/queries/gallery/images";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ImageIcon, Trash2, X, Loader2 } from "lucide-react";
+import {
+  ImageIcon,
+  Loader2,
+  Search,
+  Trash2,
+  UploadCloud,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import {
   Dispatch,
   SetStateAction,
-  useEffect,
   useCallback,
+  useEffect,
   useState,
 } from "react";
 import CustomPagination from "../shared/CustomPagination";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UploadButton from "./Gallery/UploadButton";
+import FolderButton from "./Gallery/FolderButton";
+import ListFolderButton from "./Gallery/ListFolderButton";
 
 interface Props {
   open: boolean;
@@ -52,6 +64,8 @@ const GlobalImageSelector = ({
   const [page, setPage] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<ImageType | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const queryClient = useQueryClient();
 
@@ -81,6 +95,11 @@ const GlobalImageSelector = ({
       setSelectedImages(selectedImage);
     }
   }, [selectedImage, mode, open]);
+
+  // Filter images based on search query
+  const filteredImages = images.filter((img) =>
+    img.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleSelectImage = useCallback(
     (url: string) => {
@@ -146,45 +165,62 @@ const GlobalImageSelector = ({
       <div
         className={cn(
           "aspect-square overflow-hidden rounded-lg border bg-white relative group transition-all duration-200",
-          isSelected
-            ? "ring-2 ring-primary border-primary"
-            : "hover:border-gray-400",
           deleteMutation.isPending && imageToDelete?.id === img.id
             ? "opacity-50"
-            : "",
+            : "cursor-pointer",
         )}
         onClick={() => handleSelectImage(img.url)}
       >
-        <div className="w-full h-full relative">
+        <div className="flex justify-center items-center w-full h-full">
           <Image
             src={img.url}
             alt={img.name || "gallery image"}
-            fill
-            sizes="150px"
-            className="cursor-pointer object-cover transition-transform duration-200 group-hover:scale-105"
+            height={100}
+            width={100}
             loading="lazy"
+            className="cursor-pointer transition-transform duration-200 group-hover:scale-105 w-full h-full object-contain bg-white rounded-lg"
+            sizes="200px"
           />
         </div>
 
         {deleteMutation.isPending && imageToDelete?.id === img.id ? (
-          <div className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full">
-            <Loader2 size={16} className="animate-spin" />
+          <div className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full">
+            <Loader2 size={14} className="animate-spin" />
           </div>
         ) : (
           <button
             onClick={(e) => handleOpenDeleteDialog(img, e)}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 p-1.5 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
             title="Delete image"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
           </button>
         )}
 
         {isSelected && (
-          <div className="absolute bottom-0 left-0 right-0 bg-primary/80 text-primary-foreground text-xs py-1 text-center">
-            Selected
+          <div className="absolute inset-0 bg-primary/10 border-2 border-primary rounded-lg">
+            <div className="absolute top-2 left-2 bg-primary text-primary-foreground rounded-full p-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-check"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </div>
           </div>
         )}
+
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent pt-8 pb-2 px-3 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+          {img.name || "Untitled image"}
+        </div>
       </div>
     ),
     [
@@ -211,143 +247,270 @@ const GlobalImageSelector = ({
     <>
       <Sheet open={open} onOpenChange={onClose}>
         <SheetContent
-          className="max-w-6xl w-full overflow-y-auto"
-          style={{ maxWidth: "75vw" }}
+          className="max-w-6xl w-full p-0"
+          style={{ maxWidth: "80vw" }}
         >
-          <SheetHeader className="border-b pb-4 mb-4">
-            <div className="flex justify-between items-center">
-              <SheetTitle className="text-2xl">Media Gallery</SheetTitle>
-              {selectedImages.length > 0 && (
-                <Badge variant="secondary" className="px-3 py-1 text-sm">
-                  {selectedImages.length} selected
-                </Badge>
-              )}
-            </div>
-          </SheetHeader>
-
-          {/* Selected Preview */}
-          {selectedImages.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-medium mb-3 text-sm text-gray-600">
-                Selected Media
-              </h3>
-              <div className="flex flex-wrap gap-3 bg-gray-50 p-3 rounded-lg border">
-                {selectedImages.map((url) => (
-                  <div
-                    key={url}
-                    className="relative group bg-white border rounded-lg shadow-sm overflow-hidden"
-                  >
-                    <div className="w-20 h-20 relative">
-                      <Image
-                        src={url}
-                        alt="selected"
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <button
-                      onClick={(e) => handleRemoveImage(url, e)}
-                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Remove from selection"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* All Images - Gallery View */}
-          <SheetDescription className="min-h-[400px]">
-            {isLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <ImageSkeleton key={i} />
-                ))}
-              </div>
-            ) : images.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {images.map((img) => {
-                  const isSelected = selectedImages.includes(img.url);
-                  return (
-                    <div key={img.id}>
-                      <ImageThumbnail img={img} isSelected={isSelected} />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="bg-gray-50 p-6 rounded-full mb-4">
-                  <ImageIcon size={48} className="text-gray-400" />
+          <div className="flex flex-col h-full">
+            <SheetHeader className="border-b p-6">
+              <div className="flex justify-between items-center">
+                <SheetTitle className="text-2xl font-bold">
+                  Media Gallery
+                </SheetTitle>
+                <div className="flex items-center gap-2">
+                  {selectedImages.length > 0 && (
+                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                      {selectedImages.length} selected
+                    </Badge>
+                  )}
                 </div>
-                <h3 className="text-lg font-medium mb-2">No media found</h3>
-                <p className="text-sm text-gray-500 max-w-sm">
-                  Upload some images to get started.
-                </p>
               </div>
-            )}
-          </SheetDescription>
+            </SheetHeader>
 
-          {/* Pagination */}
-          {!isLoading && totalPages > 1 && (
-            <div className="flex justify-center my-4 border-t pt-4">
-              <CustomPagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
+            <div className="flex flex-row h-full">
+              {/* Left sidebar */}
+              <div className="w-64 border-r h-full p-4 hidden lg:block">
+                <Tabs
+                  defaultValue="all"
+                  className="w-full"
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                >
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="all">All Media</TabsTrigger>
+                    <TabsTrigger value="selected">Selected</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="all" className="mt-0">
+                    <div className="space-y-4 w-full">
+                      <UploadButton className="w-full" />
+                      <FolderButton className="w-full" />
+                      <ListFolderButton className="w-full " />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="selected" className="mt-0">
+                    <div className="space-y-4">
+                      <div className="text-sm font-medium flex justify-between">
+                        <span>Selected Images</span>
+                        <span className="text-primary">
+                          {selectedImages.length}
+                        </span>
+                      </div>
+
+                      {selectedImages.length > 0 ? (
+                        <ScrollArea className="h-[calc(100vh-300px)]">
+                          <div className="space-y-2">
+                            {selectedImages.map((url) => (
+                              <div
+                                key={url}
+                                className="relative group bg-white border rounded-lg shadow-sm overflow-hidden flex items-center p-2 gap-2"
+                              >
+                                <div className="w-12 h-12 relative flex-shrink-0">
+                                  <Image
+                                    src={url}
+                                    alt="selected"
+                                    fill
+                                    sizes="48px"
+                                    className="object-cover rounded"
+                                  />
+                                </div>
+                                <div className="text-xs line-clamp-2 flex-1">
+                                  {url.split("/").pop() || "Image"}
+                                </div>
+                                <button
+                                  onClick={(e) => handleRemoveImage(url, e)}
+                                  className="p-1 text-gray-500 hover:text-red-500 rounded-full"
+                                  title="Remove from selection"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      ) : (
+                        <div className="py-8 text-center text-sm text-gray-500">
+                          No images selected
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              {/* Main content */}
+              <div className="flex-1 flex flex-col h-full overflow-hidden">
+                <ScrollArea className="flex-1 p-6">
+                  {activeTab === "all" ? (
+                    <>
+                      {/* All Images - Gallery View */}
+                      <div className="min-h-[400px]">
+                        {isLoading ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {Array.from({ length: 15 }).map((_, i) => (
+                              <ImageSkeleton key={i} />
+                            ))}
+                          </div>
+                        ) : filteredImages.length > 0 ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {filteredImages.map((img) => {
+                              const isSelected = selectedImages.includes(
+                                img.url,
+                              );
+                              return (
+                                <div key={img.id}>
+                                  <ImageThumbnail
+                                    img={img}
+                                    isSelected={isSelected}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-16 text-center">
+                            <div className="bg-gray-50 p-6 rounded-full mb-4">
+                              <ImageIcon size={48} className="text-gray-400" />
+                            </div>
+                            <h3 className="text-lg font-medium mb-2">
+                              {searchQuery
+                                ? "No matching images found"
+                                : "No media found"}
+                            </h3>
+                            <p className="text-sm text-gray-500 max-w-sm">
+                              {searchQuery
+                                ? "Try a different search term or browse all images."
+                                : "Upload some images to get started."}
+                            </p>
+                            {searchQuery && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-4"
+                                onClick={() => setSearchQuery("")}
+                              >
+                                Clear Search
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Pagination */}
+                      {!isLoading && totalPages > 1 && (
+                        <div className="flex justify-center my-6">
+                          <CustomPagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    // Selected Images View (only visible on mobile/tablet)
+                    <div className="lg:hidden">
+                      {selectedImages.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                          {selectedImages.map((url) => (
+                            <div
+                              key={url}
+                              className="relative group bg-white border rounded-lg shadow-sm overflow-hidden"
+                            >
+                              <div className="aspect-square w-full relative">
+                                <Image
+                                  src={url}
+                                  alt="selected"
+                                  fill
+                                  sizes="200px"
+                                  className="object-cover"
+                                />
+                              </div>
+                              <button
+                                onClick={(e) => handleRemoveImage(url, e)}
+                                className="absolute top-2 right-2 p-1.5 bg-black/70 text-white rounded-full hover:bg-red-500"
+                                title="Remove from selection"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                          <div className="bg-gray-50 p-6 rounded-full mb-4">
+                            <ImageIcon size={48} className="text-gray-400" />
+                          </div>
+                          <h3 className="text-lg font-medium mb-2">
+                            No images selected
+                          </h3>
+                          <p className="text-sm text-gray-500 max-w-sm">
+                            Select images from the gallery to continue.
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-4"
+                            onClick={() => setActiveTab("all")}
+                          >
+                            Browse Gallery
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </ScrollArea>
+
+                {/* Footer */}
+                <SheetFooter className="p-4 flex flex-wrap items-center justify-between gap-2 border-t">
+                  <div className="text-sm text-gray-500">
+                    {isLoading ? (
+                      <Skeleton className="w-24 h-4" />
+                    ) : (
+                      <>
+                        {images.length} {images.length === 1 ? "item" : "items"}
+                      </>
+                    )}
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={onClose}
+                      disabled={deleteMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk}
+                      disabled={
+                        mode === "single"
+                          ? selectedImages.length !== 1
+                          : selectedImages.length === 0 ||
+                            deleteMutation.isPending
+                      }
+                    >
+                      {mode === "single"
+                        ? "Select Image"
+                        : `Select ${selectedImages.length || 0} Images`}
+                    </Button>
+                  </div>
+                </SheetFooter>
+              </div>
             </div>
+          </div>
+
+          {/* Delete Confirmation Dialog */}
+          {isDialogOpen && (
+            <DeleteConfirmationDialog
+              isOpen={isDialogOpen}
+              isLoading={deleteMutation.isPending}
+              onClose={handleCloseDeleteDialog}
+              onConfirm={handleDeleteConfirm}
+              itemName={imageToDelete?.name || "this media item"}
+              actionType="Delete Media"
+            />
           )}
-
-          {/* Footer */}
-          <SheetFooter className="pt-4 flex flex-wrap items-center justify-between gap-2 border-t mt-4">
-            <div className="text-sm text-gray-500">
-              {isLoading ? (
-                <Skeleton className="w-24 h-4" />
-              ) : (
-                <>
-                  {images.length} {images.length === 1 ? "item" : "items"}
-                </>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={onClose}
-                disabled={deleteMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleOk}
-                disabled={
-                  mode === "single"
-                    ? selectedImages.length !== 1
-                    : selectedImages.length === 0 || deleteMutation.isPending
-                }
-              >
-                {mode === "single"
-                  ? "Select Image"
-                  : `Select ${selectedImages.length || 0} Images`}
-              </Button>
-            </div>
-          </SheetFooter>
         </SheetContent>
-
-        {/* Delete Confirmation Dialog */}
-        {isDialogOpen && (
-          <DeleteConfirmationDialog
-            isOpen={isDialogOpen}
-            isLoading={deleteMutation.isPending}
-            onClose={handleCloseDeleteDialog}
-            onConfirm={handleDeleteConfirm}
-            itemName={imageToDelete?.name || "this media item"}
-            actionType="Delete Media"
-          />
-        )}
       </Sheet>
     </>
   );

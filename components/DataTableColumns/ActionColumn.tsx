@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +22,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
-import { deleteCategory } from "@/actions/categories";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -30,29 +30,45 @@ type ActionColumnProps = {
   model: any;
   editEndpoint: string;
   id: string | undefined;
-  // revPath: string;
+  deleteFunction?: (id: string) => Promise<any>;
 };
+
 export default function ActionColumn({
   row,
   model,
   editEndpoint,
   id = "",
+  deleteFunction,
 }: ActionColumnProps) {
-  const isActive = row.isActive;
+  const [isOpen, setIsOpen] = React.useState(false);
+
   async function handleDelete() {
+    if (!id) {
+      toast.error(`${model} not found`);
+      return;
+    }
+
+    if (!deleteFunction) {
+      toast.error(`Delete function is not defined`);
+      return;
+    }
+
     try {
-      if (model === "category") {
-        const res = await deleteCategory(id);
-        if (res?.ok) {
-          window.location.reload();
-        }
-        toast.success(`${model} Deleted Successfully`);
-      }
+      const toastId = toast.loading(`Deleting ${model}...`);
+
+      await deleteFunction(id);
+
+      toast.success(`${model} deleted successfully`, {
+        id: toastId,
+      });
+
+      setIsOpen(false);
     } catch (error) {
-      console.log(error);
-      toast.error("Category Couldn't be deleted");
+      console.error("Delete error:", error);
+      toast.error(`${model} couldn't be deleted`);
     }
   }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,19 +80,18 @@ export default function ActionColumn({
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <AlertDialog>
+        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
           <AlertDialogTrigger asChild>
-            {/* <DropdownMenuItem className="text-red-600 hover:text-red-700 transition-all duration-500 cursor-pointer">
-              
-            </DropdownMenuItem> */}
-            <Button
-              variant={"ghost"}
-              size={"sm"}
-              className="text-red-600 hover:text-red-700 transition-all duration-500 cursor-pointer "
+            <DropdownMenuItem
+              className="text-red-600 hover:text-red-700 transition-all duration-500 cursor-pointer"
+              onSelect={(e) => {
+                e.preventDefault();
+                setIsOpen(true);
+              }}
             >
-              <Trash className="w-4 h-4  mr-2 flex-shrink-0" />
+              <Trash className="w-4 h-4 mr-2 flex-shrink-0" />
               <span>Delete</span>
-            </Button>
+            </DropdownMenuItem>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -88,22 +103,21 @@ export default function ActionColumn({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <Button variant={"destructive"} onClick={() => handleDelete()}>
+              <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700"
+                onClick={handleDelete}
+              >
                 Permanently Delete
-              </Button>
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        {/* <DropdownMenuItem
-          className="text-red-600 hover:text-red-700 transition-all duration-500 cursor-pointer"
-          onClick={() => handleDelete()}
-        >
-          <Trash className="w-4 h-4  mr-2 flex-shrink-0" />
-          <span>Delete</span>
-        </DropdownMenuItem> */}
-        <DropdownMenuItem>
-          <Link href={editEndpoint} className="flex item gap-2">
-            <Pencil className="w-4 h-4 " />
+        <DropdownMenuItem asChild>
+          <Link
+            href={editEndpoint}
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <Pencil className="w-4 h-4" />
             <span>Edit</span>
           </Link>
         </DropdownMenuItem>

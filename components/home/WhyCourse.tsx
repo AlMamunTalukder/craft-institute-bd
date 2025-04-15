@@ -2,16 +2,18 @@ import Image from "next/image";
 import React from "react";
 import { FaCheck } from "react-icons/fa";
 import Container from "../shared/Container";
+import SectionTitle from "../shared/SectionTitle";
 
 const WhyCourse = () => {
   return (
     <div>
       <Container>
         <div className="relative mt-20">
-          {/* Top Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#46056B] mb-10">
-            শিক্ষার্থীদের কাজের <br /> পোর্টফোলিও
-          </h2>
+          <SectionTitle
+            text="শিক্ষার্থীদের কাজের পোর্টফোলিও"
+            lineWidth="lg"
+            hasLineBreak={true}
+          />
 
           {/* Grid layout for video and bullet points */}
           <div className="grid md:grid-cols-2 gap-10 items-start mb-12">

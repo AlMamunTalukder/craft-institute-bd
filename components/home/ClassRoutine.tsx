@@ -1,14 +1,13 @@
 import Container from "../shared/Container";
 
 import React from "react";
+import SectionTitle from "../shared/SectionTitle";
 
 const ClassRoutine = () => {
   return (
     <Container>
       <div className="border-dashed border-b pb-20 mt-20">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#4F0187] mb-6">
-          ক্লাস শিডিউল
-        </h2>
+        <SectionTitle text="ক্লাস শিডিউল" />
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-300 text-center">
             <thead className="bg-[#4F0187] text-white">

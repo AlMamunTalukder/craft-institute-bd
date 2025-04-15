@@ -6,7 +6,11 @@ import Image from "next/image";
 import { HiMenu, HiX } from "react-icons/hi";
 import Link from "next/link";
 
-const Header = () => {
+type MenuItem = {
+  logo: string;
+};
+
+const Header = ({ logo }: MenuItem) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -42,8 +46,8 @@ const Header = () => {
             <Link href="/">
               <Image
                 src="/logo.png"
-                height={100}
-                width={100}
+                height={120}
+                width={120}
                 alt="Logo"
                 priority
               />
@@ -92,11 +96,6 @@ const Header = () => {
                   </a>
                 </li>
               ))}
-              <li className="pt-2">
-                <button className="w-full bg-gradient-to-r from-[#DC25FF] to-[#3C016F] text-white font-semibold py-2 px-4 rounded-lg transition-all hover:shadow-lg duration-300">
-                  Login
-                </button>
-              </li>
             </ul>
           </div>
         )}

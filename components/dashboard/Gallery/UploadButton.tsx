@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { uploadImage } from "@/queries/gallery/file";
 import { getAllFolders } from "@/queries/gallery/folder";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,7 +38,11 @@ const validationSchema = z.object({
 
 type FormValues = z.infer<typeof validationSchema>;
 
-const UploadButton = () => {
+type Props = {
+  className?: string;
+};
+
+const UploadButton = ({ className }: Props = { className: "" }) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -83,7 +88,11 @@ const UploadButton = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setOpen(true)}>
+        <Button
+          variant="outline"
+          className={cn(className)}
+          onClick={() => setOpen(true)}
+        >
           <UploadCloud size={24} />
           <span>Upload New File</span>
         </Button>

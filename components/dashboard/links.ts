@@ -40,6 +40,33 @@ export const sidebarLinks: RoleBasedLinks = {
     { title: "Dashboard", href: "/dashboard", icon: Home },
 
     {
+      title: "Content",
+      href: "/dashboard/content",
+      icon: LayoutGrid,
+      children: [
+        {
+          title: "Site Content",
+          href: "/dashboard/content/site-content",
+          extra: ["/dashboard/content/site-content/*"],
+        },
+        {
+          title: "Banner",
+          href: "/dashboard/content/banner",
+          extra: ["/dashboard/content/banner/*"],
+        },
+        {
+          title: "Instructor",
+          href: "/dashboard/content/instructor/list",
+          extra: [
+            "/dashboard/content/instructor/list/*",
+            "/dashboard/content/instructor/update/*",
+            "/dashboard/content/instructor/new",
+          ],
+        },
+      ],
+    },
+
+    {
       title: "File Manager",
       href: "/dashboard/file-manager",
       icon: Images,

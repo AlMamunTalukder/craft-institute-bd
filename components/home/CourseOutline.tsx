@@ -2,6 +2,7 @@ import Container from "../shared/Container";
 
 import React from "react";
 import { BsCheckLg } from "react-icons/bs";
+import SectionTitle from "../shared/SectionTitle";
 
 const ListItem = ({ children }: { children: React.ReactNode }) => (
   <li className="flex items-start gap-2 text-gray-800 leading-relaxed">
@@ -14,9 +15,7 @@ const CourseOutline = () => {
   return (
     <section className="py-16 bg-[#FBF5F2] relative z-10 mt-20 overflow-hidden">
       <Container>
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-[#4F0187] mb-10">
-          কোর্সে যা শেখানো হবে
-        </h2>
+        <SectionTitle text="কোর্সে যা শেখানো হবে" />
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white p-6 rounded-2xl border-l-4 border-[#D523F9]">

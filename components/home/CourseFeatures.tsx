@@ -9,6 +9,7 @@ import {
   FaHandsHelping,
 } from "react-icons/fa";
 import { MdSupportAgent } from "react-icons/md";
+import SectionTitle from "../shared/SectionTitle";
 
 const features = [
   {
@@ -53,9 +54,7 @@ const CourseFeatures = () => {
   return (
     <Container>
       <div className="mt-20">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#4F0187] mb-8">
-          কোর্সের বিশেষ ফিচারসমূহ
-        </h2>
+        <SectionTitle text="কোর্সের বৈশিষ্ট্য" />
         <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;

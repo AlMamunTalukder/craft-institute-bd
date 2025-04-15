@@ -130,7 +130,10 @@ export default function DataTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="[&>th]:border-r last:border-r-0"
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -152,6 +155,7 @@ export default function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="[&>td]:border-r last:border-r-0"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

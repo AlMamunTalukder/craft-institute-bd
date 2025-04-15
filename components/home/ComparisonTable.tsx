@@ -1,4 +1,5 @@
 import Container from "../shared/Container";
+import SectionTitle from "../shared/SectionTitle";
 
 const ComparisonTable = () => {
   const data = [
@@ -18,10 +19,11 @@ const ComparisonTable = () => {
   return (
     <div className="bg-[#fff6ef] py-20 mt-20">
       <Container>
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#4F0187] mb-5">
-          আমাদের সাথে অন্যান্য কোর্সের পার্থক্য
-        </h2>
-
+        <SectionTitle
+          text=" আমাদের সাথে অন্যান্য কোর্সের পার্থক্য"
+          lineWidth="lg"
+          hasLineBreak={true}
+        />
         <div className="overflow-x-auto border border-gray-200 rounded-md">
           <table className="w-full text-center bg-white rounded-md overflow-hidden">
             <thead className="bg-[#4F0187] text-white">

@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/dialog";
 import { formatBytes } from "@/lib/formatBytes";
 import { generateSlug } from "@/lib/generateSlug";
-import { createBulkCategories } from "@/actions/categories";
 import toast from "react-hot-toast";
 import exportDataToExcel from "@/lib/exportDataToExcel";
 import { FaFileExcel } from "react-icons/fa";
@@ -48,6 +47,7 @@ type TableHeaderProps = {
   data: any;
   model: string;
   showImport?: boolean;
+  showExport?: boolean;
 };
 export default function TableHeader({
   title,
@@ -56,6 +56,7 @@ export default function TableHeader({
   data,
   model,
   showImport = true,
+  showExport = true,
 }: TableHeaderProps) {
   const [status, setStatus] = useState<SelectValue>(null);
   const [date, setDate] = useState<SelectValue>(null);
@@ -134,19 +135,7 @@ export default function TableHeader({
 
           try {
             setLoading(true);
-            if (model === "category") {
-              const categories = json.map((item: any) => {
-                return {
-                  title: item.Title,
-                  slug: generateSlug(item.Title),
-                  description: item.Description,
-                  imageUrl: item.Image,
-                  mainCategoryId: item.mainCategoryId,
-                  status: true,
-                };
-              });
-              await createBulkCategories(categories);
-            }
+
             setLoading(false);
             setUploadSuccess(true);
             // window.location.reload();
@@ -170,23 +159,25 @@ export default function TableHeader({
     exportDataToExcel(data, filename);
   }
   return (
-    <div className=" mb-3">
-      <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 py-3">
+    <div className="bg-muted/50 border border-muted rounded-xl shadow-sm px-4 py-3 mb-6">
+      <div className="flex justify-between items-center py-3">
         <h2 className="scroll-m-20  text-2xl font-semibold tracking-tight first:mt-0">
           {title}({data.length})
         </h2>
         <div className="ml-auto flex items-center gap-2">
-          <Button
-            onClick={handleExportData}
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1"
-          >
-            <FaFileExcel className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Export
-            </span>
-          </Button>
+          {showExport && (
+            <Button
+              onClick={handleExportData}
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1"
+            >
+              <FaFileExcel className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Export
+              </span>
+            </Button>
+          )}
 
           {showImport && (
             <Dialog>
